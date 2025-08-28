@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVO</title>
+</head>
+<body>
+    <h1>AVOflash: topics -> cards in seconds</h1>
+    <input type="text" placeholder="Topic" id="topic">
+    <button id="gen">GENERATE</button>
+    <p id="echo"></p>
+    <div id="cards"></div>
+
+    <script>
+        document.getElementById("gen").onclick = () => {
+            const t = document.getElementById("topic").value.trim();
+            const payload = {topics: t}
+            document.getElementById("echo").textContent = "Generating…";
+
+            fetch("http://127.0.0.1:5000/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(({cards}) => {
+                document.getElementById("echo").textContent = `Got ${cards.length} cards.`;
+                const root = document.getElementById("cards");
+                root.innerHTML = "";
+                cards.forEach(c => {
+                    const card = document.createElement("div");
+                    card.style.border = "1px solid #ccc";
+                    card.style.borderRadius = "8px";
+                    card.style.padding = "12px";
+                    card.style.margin = "8px 0";
+                    card.style.cursor = "pointer";
+                    card.style.userSelect = "none";
+                    const front = document.createElement("div");
+                    front.innerHTML = `<strong>Q:</strong> ${c.front}`;
+                
+                    const back = document.createElement("div");
+                    back.innerHTML = `<strong>A:</strong> ${c.back}`;
+                    back.style.marginTop = "8px";
+                    back.style.display = "none";
+
+                    card.onclick = () => {
+                        back.style.display = back.style.display === "none" ? "block" : "none";
+                    };
+
+                    card.appendChild(front);
+                    card.appendChild(back);
+                    root.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("cards").textContent = "Error: " + err.message;
+            });
+        };
+    </script>
+</body>
+</html>
