@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        h2 { color: red; margin-bottom: 1rem; }
+        a { display: block; margin-top: 1rem; color: black; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Error</h2>
+        <p>{{ message }}</p>
+        <a href="{{ url_for('login') }}">Back to Login</a>
+    </div>
+</body>
+</html>
