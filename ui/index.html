@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashavo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-800 to-blue-600 text-white font-sans">
+
+  <!-- Navbar -->
+  <nav class="flex justify-between items-center p-6 bg-blue-900 shadow-md">
+    <div class="text-2xl font-bold">Flashavo</div>
+    <ul class="flex space-x-6">
+      <li><a href="#" class="hover:text-yellow-400 transition">Home</a></li>
+      <li><a href="#flashcards" class="hover:text-yellow-400 transition">Flashcards</a></li>
+      <li><a href="#about" class="hover:text-yellow-400 transition">About</a></li>
+      <li><a href="#contact" class="hover:text-yellow-400 transition">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="text-center py-20 px-6">
+    <h1 class="text-5xl font-extrabold mb-4">Learn Faster with Flashavo</h1>
+    <p class="text-lg mb-8">Interactive flashcards to make studying fun and effective.</p>
+    <a href="#flashcards" class="bg-yellow-400 text-blue-900 font-bold px-6 py-3 rounded-lg hover:bg-yellow-300 transition">Get Started</a>
+  </section>
+
+  <!-- Flashcards Section -->
+  <section id="flashcards" class="py-16 px-6 bg-blue-700">
+    <h2 class="text-4xl font-bold text-center mb-12">Flashcards</h2>
+    <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+      <!-- Card 1 -->
+      <div class="flashcard cursor-pointer w-full h-64 perspective">
+        <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-preserve-3d">
+          <div class="card-front absolute w-full h-full bg-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 backface-hidden">
+            <h3 class="text-2xl font-semibold">What is AI?</h3>
+          </div>
+          <div class="card-back absolute w-full h-full bg-yellow-400 text-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 rotate-y-180 backface-hidden">
+            <p>AI stands for Artificial Intelligence, which enables machines to mimic human intelligence.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="flashcard cursor-pointer w-full h-64 perspective">
+        <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-preserve-3d">
+          <div class="card-front absolute w-full h-full bg-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 backface-hidden">
+            <h3 class="text-2xl font-semibold">What is Python?</h3>
+          </div>
+          <div class="card-back absolute w-full h-full bg-yellow-400 text-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 rotate-y-180 backface-hidden">
+            <p>Python is a popular programming language used for web development, AI, and more.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="flashcard cursor-pointer w-full h-64 perspective">
+        <div class="card-inner relative w-full h-full transition-transform duration-500 transform-style-preserve-3d">
+          <div class="card-front absolute w-full h-full bg-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 backface-hidden">
+            <h3 class="text-2xl font-semibold">What is a Flashcard?</h3>
+          </div>
+          <div class="card-back absolute w-full h-full bg-yellow-400 text-blue-900 rounded-xl shadow-lg flex items-center justify-center text-center p-6 rotate-y-180 backface-hidden">
+            <p>A flashcard is a study aid with a question on one side and the answer on the other.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-16 px-6 text-center">
+    <h2 class="text-4xl font-bold mb-6">About Flashavo</h2>
+    <p class="max-w-3xl mx-auto text-lg">Flashavo is designed to help students learn efficiently using interactive flashcards. Study anywhere, anytime, and retain knowledge faster!</p>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-16 px-6 bg-blue-700 text-center">
+    <h2 class="text-4xl font-bold mb-6">Contact Us</h2>
+    <p class="mb-8">Have questions? Reach out to us!</p>
+    <a href="mailto:contact@flashavo.com" class="bg-yellow-400 text-blue-900 font-bold px-6 py-3 rounded-lg hover:bg-yellow-300 transition">Email Us</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-blue-900 py-6 text-center text-gray-300">
+    &copy; 2025 Flashavo. All rights reserved.
+  </footer>
+
+  <!-- JavaScript for click-to-flip -->
+  <script>
+    const cards = document.querySelectorAll('.flashcard');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const inner = card.querySelector('.card-inner');
+        inner.classList.toggle('rotate-y-180');
+      });
+    });
+  </script>
+
+  <style>
+    .perspective {
+      perspective: 1000px;
+    }
+    .transform-style-preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+  </style>
+
+</body>
+</html>
