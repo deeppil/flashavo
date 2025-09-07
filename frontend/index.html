@@ -65,6 +65,16 @@
     }
   </style>
 </head>
+<script>
+  (function () {
+  const u = localStorage.getItem("loggedInUser");
+  if (!u) {
+    // optionally carry the page they tried to visit
+    const next = encodeURIComponent(location.pathname + location.search);
+    window.location.href = "login.html?next=" + next;
+  }
+})();
+</script>
 <body class="bg-gradient-to-br from-blue-900 to-indigo-700 min-h-screen flex items-center justify-center text-white">
   <div class="max-w-2xl w-full bg-white p-8 rounded-2xl shadow-2xl text-gray-800">
     <h1 class="text-3xl font-bold mb-4 text-center text-indigo-700">AVO Flashcards</h1>
