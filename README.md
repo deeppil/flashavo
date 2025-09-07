@@ -12,5 +12,7 @@ The architecture of our project and the idea itself allows for us to expand this
 - Share flashcards with friends
 - Quiz creation and live quizes where users can compete against each other
 
+Please note, as this is a prototype the login and register features are done locally, hence accounts you create on one device will not work from another. This can be easily fixed once we integreate a database.
+
 Created with passion,
 Team AVO
