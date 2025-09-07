@@ -6,6 +6,10 @@ app = Flask(__name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 CORS(app=app)
 
+@app.get("/")
+def home():
+    return app.send_static_file("index.html")
+
 @app.post("/generate")
 def generate():
     data = request.get_json(force=True, silent=True) or {}
