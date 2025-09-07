@@ -1,5 +1,16 @@
-JSON CONTRACT
-POST /generate
-Headers: Content-Type: application/json
-Request: { "notes": "plain text..." }
-Response: { "cards": [ { "front": "Q", "back": "A", "tag": "Topic" } ] }
+# AVO Flashcards
+AVO Flashcards is a flashcard generation site, to make learning easier for students, professionals, even teachers! The idea for AVO flashcards was created from the BitnBuild Hackathon. 
+
+# Current Features💡
+- Login/Register
+- Generate Flashcards(you can select n number of flashcards to be generated, default is 3)
+- Follow up feature(Where you can ask one follow up to each flashcard to broaden your understanding)
+
+# Future Features🚨
+The architecture of our project and the idea itself allows for us to expand this prototype into a working site that is helpful to students, some of the features we have in mind are:
+- Group flashcards and save for later usage
+- Share flashcards with friends
+- Quiz creation and live quizes where users can compete against each other
+
+Created with passion,
+Team AVO
