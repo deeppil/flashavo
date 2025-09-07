@@ -140,20 +140,82 @@
 
         if (data.cards && data.cards.length > 0) {
           data.cards.forEach((card, index) => {
-            const cardElement = document.createElement('div');
-            cardElement.className = 'flashcard relative w-full h-48 bg-white rounded-2xl shadow-lg cursor-pointer';
-            cardElement.style.animationDelay = `${index * 0.1}s`; // Staggered animation
-            cardElement.innerHTML = `
-              <div class="card-inner relative w-full h-full">
-                <div class="card-front">${card.front}</div>
-                <div class="card-back">${card.back}</div>
-              </div>
-            `;
-            cardElement.addEventListener('click', () => {
-              cardElement.classList.toggle('flipped');
-            });
-            cardsContainer.appendChild(cardElement);
-          });
+  // container for the card + follow-up UI
+  const cell = document.createElement('div');
+  cell.className = 'space-y-2';
+
+  // --- flip card ---
+  const cardElement = document.createElement('div');
+  cardElement.className = 'flashcard relative w-full h-48 bg-white rounded-2xl shadow-lg cursor-pointer';
+  cardElement.style.animationDelay = `${index * 0.1}s`;
+  cardElement.innerHTML = `
+    <div class="card-inner relative w-full h-full">
+      <div class="card-front">${card.front}</div>
+      <div class="card-back">${card.back}</div>
+    </div>
+  `;
+  cardElement.addEventListener('click', () => {
+    cardElement.classList.toggle('flipped');
+  });
+
+  // --- follow-up UI (ONE only) ---
+  const followWrap = document.createElement('div');
+  followWrap.className = 'p-3 bg-indigo-50 rounded-lg text-gray-800';
+  followWrap.innerHTML = `
+    <div class="flex gap-2">
+      <input type="text" placeholder="One follow-up about this card"
+             class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+      <button class="px-3 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Ask</button>
+    </div>
+    <p class="mt-2 text-sm text-indigo-900 hidden"></p>
+  `;
+
+  const followInput = followWrap.querySelector('input');
+  const followBtn   = followWrap.querySelector('button');
+  const ansEl       = followWrap.querySelector('p');
+  let used = false;
+
+  followBtn.addEventListener('click', async () => {
+    if (used) return; // only one follow-up
+    const query = followInput.value.trim();
+    if (!query) { followInput.focus(); return; }
+
+    try {
+      followBtn.disabled = true;
+      followBtn.textContent = '…';
+
+      const r = await fetch('https://flashavo.onrender.com/follow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          topic: document.getElementById('topic').value.trim(),
+          question: card.front,
+          answer: card.back
+        })
+      });
+
+      if (!r.ok) throw new Error('Follow-up failed');
+      const out = await r.json(); // { answer: "..." }
+
+      ansEl.textContent = out.answer || 'No answer';
+      ansEl.classList.remove('hidden');
+
+      used = true;
+      followBtn.textContent = 'Follow-up used';
+      followInput.disabled = true;
+    } catch (e) {
+      followBtn.disabled = false;
+      followBtn.textContent = 'Ask';
+      alert(e.message);
+    }
+  });
+
+  // compose and append
+  cell.appendChild(cardElement);
+  cell.appendChild(followWrap);
+  cardsContainer.appendChild(cell);
+});
         } else {
           errorDiv.textContent = 'No flashcards generated';
           errorDiv.classList.remove('hidden');
