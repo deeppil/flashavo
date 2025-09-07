@@ -78,10 +78,17 @@
 <body class="bg-gradient-to-br from-blue-900 to-indigo-700 min-h-screen flex items-center justify-center text-white">
   <div class="max-w-2xl w-full bg-white p-8 rounded-2xl shadow-2xl text-gray-800">
     <h1 class="text-3xl font-bold mb-4 text-center text-indigo-700">AVO Flashcards</h1>
-    
-    <div class="mb-4">
-      <label class="block text-lg font-medium mb-2">Enter a Topic:</label>
-      <input id="topic" type="text" placeholder="e.g., Machine Learning" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="md:col-span-2">
+        <label class="block text-lg font-medium mb-2">Enter a Topic:</label>
+        <input id="topic" type="text" placeholder="e.g., Machine Learning"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
+      <div>
+        <label class="block text-lg font-medium mb-2"># of Cards:</label>
+        <input id="count" type="number" min="1" max="20" value="3"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      </div>
     </div>
     
     <button id="generateBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 hover:scale-105 transform transition duration-200 text-white font-bold py-2 px-4 rounded-lg">
@@ -100,11 +107,13 @@
   <script>
     const generateBtn = document.getElementById('generateBtn');
     const topicInput = document.getElementById('topic');
+    const countInput = document.getElementById('count');
     const cardsContainer = document.getElementById('cardsContainer');
     const loading = document.getElementById('loading');
     const errorDiv = document.getElementById('error');
 
     generateBtn.addEventListener('click', async () => {
+      const number = countInput.value
       const topic = topicInput.value.trim();
       if (!topic) {
         alert("Please enter a topic");
@@ -121,7 +130,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ topics: topic })
+          body: JSON.stringify({topics: topic, number: number})
         });
 
         if (!response.ok) throw new Error('Failed to generate flashcards');
