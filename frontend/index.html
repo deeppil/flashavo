@@ -1,141 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AVO</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVO Flashcards</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    .flashcard {
+      perspective: 1000px;
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .card-inner {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      backface-visibility: hidden;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 500;
+      padding: 20px;
+      border-radius: 1rem;
+    }
+    .card-back {
+      transform: rotateY(180deg);
+      background-color: #1e40af;
+      color: white;
+    }
+    .card-front {
+      background-color: #f9fafb;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #4f46e5;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
-<body>
-    <h1>AVOflash: topics -> cards in seconds</h1>
-    <input type="text" placeholder="Topic" id="topic"><br><br>
-    <input type="number" id="number"><br><br>
-    <button id="gen">GENERATE</button>
-    <p id="echo"></p>
-    <div id="cards"></div>
-
-    <script>
-        document.getElementById("gen").onclick = () => {
-            const t = document.getElementById("topic").value.trim();
-            const n = document.getElementById("number").value;
-            const number = parseInt(n, 10);
-            const count = Number.isFinite(number) && number > 0 ? number : 3;
-            const payload = {topics: t, number: count};
-            if (!t) { document.getElementById("echo").textContent = "Enter a topic."; return;}
-
-            document.getElementById("echo").textContent = "Generating…";
-
-            fetch("http://127.0.0.1:5000/generate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify(payload)
-            })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                return res.json();
-            })
-            .then(({cards}) => {
-                document.getElementById("echo").textContent = `Generated ${cards.length} cards.`;
-                const root = document.getElementById("cards");
-                root.innerHTML = "";
-                cards.forEach(c => {
-                    let check = 0;
-                    const card = document.createElement("div");
-                    card.style.border = "1px solid #ccc";
-                    card.style.borderRadius = "8px";
-                    card.style.padding = "12px";
-                    card.style.margin = "8px 0";
-                    card.style.cursor = "pointer";
-                    card.style.userSelect = "none";
-                    const front = document.createElement("div");
-                    front.innerHTML = `<strong>Q:</strong> ${c.front}`;
-
-                    const flip = document.createElement("button");
-                    flip.textContent = "Flip";
-                
-                    const back = document.createElement("div");
-                    back.innerHTML = `<strong>A:</strong> ${c.back}`;
-                    back.style.marginTop = "8px";
-                    back.style.display = "none";
-
-                    flip.onclick = () => {
-                        if (check == 0) {
-                            front.innerHTML = `<strong>A:</strong> ${c.back}`;
-                            check = 1;
-                        } else if(check == 1) {
-                            front.innerHTML = `<strong>Q:</strong> ${c.front}`;
-                            check = 0;
-                        }
-                    };
-
-                    // follow-up btn
-                    const follow_up_btn = document.createElement("button");
-                    const follow_up_answer = document.createElement("p");
-                    follow_up_answer.textContent = "";
-                    const enter_btn = document.createElement("button");
-                    enter_btn.textContent = "Enter"
-                    
-                    follow_up_btn.textContent = "Follow-up";
-                    follow_up_btn.style.marginTop = "8px";
-
-                    const follow_up = document.createElement("div");
-                    const follow_input = document.createElement("input");
-                    follow_input.placeholder = "Type follow-up";
+<body class="bg-gradient-to-br from-blue-900 to-indigo-700 min-h-screen flex items-center justify-center text-white">
+  <div class="max-w-2xl w-full bg-white p-8 rounded-2xl shadow-2xl text-gray-800">
+    <h1 class="text-3xl font-bold mb-4 text-center text-indigo-700">AVO Flashcards</h1>
     
-                    follow_up.style.marginTop = "8px";
-                    follow_up.style.display = "none";
-                    follow_up_btn.onclick = async (e) => {
-                        follow_up.style.display = follow_up.style.display === "none" ? "block" : "none";
-                    }
+    <div class="mb-4">
+      <label class="block text-lg font-medium mb-2">Enter a Topic:</label>
+      <input id="topic" type="text" placeholder="e.g., Machine Learning" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    </div>
+    
+    <button id="generateBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 hover:scale-105 transform transition duration-200 text-white font-bold py-2 px-4 rounded-lg">
+      Generate Flashcards
+    </button>
 
-                    enter_btn.onclick = () => {
-                        const query = follow_input.value.trim();
-                        
-                        const follow_payload = {
-                            query: query,
-                            question: c.front,
-                            topic: t,
-                            answer: c.back
-                        };
+    <div id="loading" class="flex justify-center mt-4 hidden">
+      <span class="spinner"></span>
+      <span class="ml-2 text-indigo-700 font-semibold">Generating flashcards...</span>
+    </div>
+    <div id="error" class="text-center text-red-500 font-semibold mt-4 hidden"></div>
 
-                        if (!query) return; 
-                        follow_payload.question = c.front;
-                        follow_payload.query = query;
-                        follow_payload.topic = t;
-                        follow_payload.answer = c.back;
+    <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"></div>
+  </div>
 
-                        fetch("http://127.0.0.1:5000/follow", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json"},
-                            body: JSON.stringify(follow_payload)
-                        })
-                        .then(res => {
-                            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                            return res.json();
-                        })
-                        .then((answer) => {
-                            console.log(answer.answer);
-                            follow_up_answer.textContent = answer.answer;
-                        })
-                    }
+  <script>
+    const generateBtn = document.getElementById('generateBtn');
+    const topicInput = document.getElementById('topic');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const loading = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
 
-                    follow_up.appendChild(follow_input);
-                    follow_up.appendChild(enter_btn);
+    generateBtn.addEventListener('click', async () => {
+      const topic = topicInput.value.trim();
+      if (!topic) {
+        alert("Please enter a topic");
+        return;
+      }
 
-                    card.appendChild(front);
-                    card.appendChild(back);
-                    card.appendChild(flip);
-                    card.appendChild(follow_up_btn)
-                    card.appendChild(follow_up)
-                    card.appendChild(follow_up_answer)
-                    root.appendChild(card);
+      loading.classList.remove('hidden');
+      errorDiv.classList.add('hidden');
+      cardsContainer.innerHTML = '';
 
-                });
-            })
-            .catch(err => {
-                console.error(err);
-                document.getElementById("cards").textContent = "Error: " + err.message;
+      try {
+        const response = await fetch('http://127.0.0.1:5000/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ topics: topic })
+        });
+
+        if (!response.ok) throw new Error('Failed to generate flashcards');
+
+        const data = await response.json();
+        loading.classList.add('hidden');
+
+        if (data.cards && data.cards.length > 0) {
+          data.cards.forEach((card, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'flashcard relative w-full h-48 bg-white rounded-2xl shadow-lg cursor-pointer';
+            cardElement.style.animationDelay = `${index * 0.1}s`; // Staggered animation
+            cardElement.innerHTML = `
+              <div class="card-inner relative w-full h-full">
+                <div class="card-front">${card.front}</div>
+                <div class="card-back">${card.back}</div>
+              </div>
+            `;
+            cardElement.addEventListener('click', () => {
+              cardElement.classList.toggle('flipped');
             });
-        };
-    </script>
+            cardsContainer.appendChild(cardElement);
+          });
+        } else {
+          errorDiv.textContent = 'No flashcards generated';
+          errorDiv.classList.remove('hidden');
+        }
+
+      } catch (error) {
+        loading.classList.add('hidden');
+        errorDiv.textContent = 'Error: ' + error.message;
+        errorDiv.classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
